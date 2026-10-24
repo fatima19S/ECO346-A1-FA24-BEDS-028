@@ -113,3 +113,162 @@ cat("90th percentile:", round(p90), "\n")
 cat("90th/10th ratio:", round(ratio, 2), "\n")
 
 cat("Excluded students:", excluded, "\n")
+
+
+# Step 15: Load graph package
+
+library(ggplot2)
+
+# Step 16: Keep spending from Rs 100 to Rs 1,000,000
+
+plot_students <- subset(
+  students,
+  ed_total >= 100 & ed_total <= 1000000
+)
+
+# Step 17: Convert spending to log10 scale
+
+plot_students$log_spending <- log10(
+  plot_students$ed_total
+)
+
+# Step 18: Create weighted histogram bins
+
+bin_edges <- seq(2, 6, by = 0.1)
+
+bin_id <- cut(
+  plot_students$log_spending,
+  breaks = bin_edges,
+  include.lowest = TRUE,
+  labels = FALSE
+)
+
+# Add weights of students in each bin
+
+bin_weights <- tapply(
+  plot_students$hhweight,
+  factor(bin_id, levels = 1:40),
+  sum
+)
+
+bin_weights[is.na(bin_weights)] <- 0
+
+# Step 19: Calculate density per log10 unit
+
+bin_density <- as.numeric(bin_weights) /
+  (sum(plot_students$hhweight) * 0.1)
+
+hist_data <- data.frame(
+  midpoint = head(bin_edges, -1) + 0.05,
+  density = bin_density
+)
+
+# Step 20: Prepare labels
+
+median_label <- paste0(
+  "Median: Rs ",
+  format(round(weighted_median),
+         big.mark = ",")
+)
+
+p90_label <- paste0(
+  "90th percentile: Rs ",
+  format(round(p90),
+         big.mark = ",")
+)
+
+caption_text <- paste0(
+  "Source: PSLM 2019-20. Rural KP students, ",
+  "n = ", nrow(students),
+  ". Weighted by hhweight. ",
+  "Excluded from plotted range: ", excluded, "."
+)
+
+# Step 21: Draw the histogram
+
+p <- ggplot(
+  hist_data,
+  aes(x = midpoint, y = density)
+) +
+  
+  geom_col(
+    width = 0.1,
+    fill = "grey55",
+    color = "white"
+  ) +
+  
+  geom_vline(
+    xintercept = log10(weighted_median),
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  
+  geom_vline(
+    xintercept = log10(p90),
+    linetype = "dashed",
+    linewidth = 0.8
+  ) +
+  
+  annotate(
+    "label",
+    x = log10(weighted_median),
+    y = max(hist_data$density) * 0.90,
+    label = median_label,
+    size = 3
+  ) +
+  
+  annotate(
+    "label",
+    x = log10(p90),
+    y = max(hist_data$density) * 0.70,
+    label = p90_label,
+    size = 3
+  ) +
+  
+  scale_x_continuous(
+    breaks = 2:6,
+    labels = c(
+      "Rs 100",
+      "Rs 1,000",
+      "Rs 10,000",
+      "Rs 100,000",
+      "Rs 1,000,000"
+    ),
+    limits = c(2, 6)
+  ) +
+  
+  labs(
+    title = paste0(
+      "Median annual education spending in rural KP is Rs ",
+      format(round(weighted_median), big.mark = ",")
+    ),
+    x = "Annual education spending (rupees, log scale)",
+    y = "Weighted density per log10 unit",
+    caption = caption_text
+  ) +
+  
+  theme_minimal() +
+  
+  theme(
+    plot.title = element_text(face = "bold"),
+    plot.caption = element_text(size = 8),
+    panel.grid.minor = element_blank()
+  )
+
+# Step 22: Display graph
+
+print(p)
+
+# Step 23: Save graph as SVG
+
+ggsave(
+  filename = "figures/education_spending.svg",
+  plot = p,
+  width = 11,
+  height = 6,
+  units = "in"
+)
+
+# Check that histogram density is normalized
+sum(hist_data$density) * 0.1
+
