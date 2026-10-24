@@ -30,3 +30,8 @@ The default scatterplot shows individual literacy observations against age, but 
 I improved the graph in three main ways. First, I used weighted conditional means for five-year age groups to reduce overplotting and make literacy trends easier to understand. Second, I used separate lines for men and women, allowing gender differences to be compared using position on a common scale. Third, I added direct labels and highlighted the largest gender gap, improving visual clarity and reducing unnecessary data-ink. Hollow markers also identify groups with fewer observations.
 
 However, the redesigned graph hides individual literacy outcomes and differences within each age group because it presents average literacy rates rather than individual observations.
+
+
+### Question 5: R and Python Comparison
+
+Both R and Python produced identical weighted literacy rates to one decimal place. For women aged 15–19, the rate was 52.6% in both programs. One difference was the default axis formatting in ggplot2 and Matplotlib. To ensure consistency, I manually set the vertical axis from 0% to 100%, used the same five-year age groups, and applied identical household survey weights. This allowed the graphs to present comparable results.
