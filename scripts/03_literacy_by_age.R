@@ -312,3 +312,68 @@ cat(
 )
 
 cat("\nQuestion 3 graph saved successfully.\n")
+
+
+# Create separate tables for men and women
+
+men <- subset(
+  band_table,
+  sex_name == "Men",
+  select = c(band_start, n, rate)
+)
+
+women <- subset(
+  band_table,
+  sex_name == "Women",
+  select = c(band_start, n, rate)
+)
+
+# Rename the columns
+names(men) <- c("band_start", "men_n", "men_rate")
+names(women) <- c("band_start", "women_n", "women_rate")
+
+# Join both tables
+literacy_table <- merge(
+  men, women,
+  by = "band_start"
+)
+
+# Arrange from youngest to oldest
+literacy_table <- literacy_table[
+  order(literacy_table$band_start),
+]
+
+# Create the final display table
+final_table <- data.frame(
+  "Age group" = paste0(
+    literacy_table$band_start, "-",
+    literacy_table$band_start + 4
+  ),
+  "Men (n)" = literacy_table$men_n,
+  "Men literacy (%)" = sprintf("%.1f", literacy_table$men_rate),
+  "Women (n)" = literacy_table$women_n,
+  "Women literacy (%)" = sprintf("%.1f", literacy_table$women_rate),
+  check.names = FALSE
+)
+
+# Display the finished table
+print(final_table, row.names = FALSE)
+
+# Generate a Markdown table for GitHub README
+header <- paste0(
+  "| Age group | Men (n) | Men literacy (%) | ",
+  "Women (n) | Women literacy (%) |"
+)
+
+separator <- "|---|---:|---:|---:|---:|"
+
+rows <- apply(final_table, 1, function(x) {
+  paste0("| ", paste(x, collapse = " | "), " |")
+})
+
+markdown_table <- paste(
+  c(header, separator, rows),
+  collapse = "\n"
+)
+
+cat(markdown_table)
