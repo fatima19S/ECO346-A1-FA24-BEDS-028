@@ -1,4 +1,12 @@
 # FA24-BED-028
+
+## Question 2: Distribution of Annual Education Spending
+
+### Interpretation
+
+The histogram illustrates differences in annual education spending among 4,912 students in rural Khyber Pakhtunkhwa. The weighted median represents typical spending, while the 90th percentile helps identify relatively high expenditure. Three students fall outside the plotted range. The weighted and unweighted medians can differ because survey weights assign different importance to observations. Households representing larger population shares have greater influence on the weighted distribution, making it more representative of the population.
+
+
 ## Question 3: Literacy by Age and Sex.
 
 
