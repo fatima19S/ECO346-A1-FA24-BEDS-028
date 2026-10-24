@@ -234,8 +234,10 @@ p <- ggplot(
       "Rs 100,000",
       "Rs 1,000,000"
     ),
-    limits = c(2, 6)
+    expand = expansion(mult = 0)
   ) +
+  
+  coord_cartesian(xlim = c(2, 6))
   
   labs(
     title = paste0(
