@@ -237,7 +237,7 @@ p <- ggplot(
     expand = expansion(mult = 0)
   ) +
   
-  coord_cartesian(xlim = c(2, 6))
+  coord_cartesian(xlim = c(2, 6))+
   
   labs(
     title = paste0(
